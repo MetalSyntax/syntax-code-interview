@@ -6,49 +6,59 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tap: '',
-      isTap: false
+      tap: ''
     };
   }
 
   handleTap(value) {
     this.setState({tap: this.state.tap + value})
   }
-
   render() {
     const keyboard = []
     for (var i = 0; i < key.board.length; i += 4) {
       keyboard.push(<View style={styles.row}>
-        {key.board.slice(i, i + 4).map((keys, index) => (
-          <TouchableOpacity style={styles.touchable} onPress={() => this.handleTap(keys)}>
+        {key.board.slice(i, i + 4).map((keys) => (
+          <TouchableOpacity 
+            onPress={() => this.handleTap(keys)}
+            style={styles.touchable}>
               <Text style={styles.button}>
                 {keys}
               </Text>
           </TouchableOpacity>
         ))}
-      </View>)
-    }
+      </View>)}
     return (
       <View style={styles.container}>
         <StatusBar/>
         <SafeAreaView>
+        {this.state.tap.length > 0 ?
         <View style={styles.rowClose}>
           <Text style={styles.close}>
             Clear
           </Text>
-        <TouchableOpacity style={styles.rowClear} onPress={() => this.setState({ tap: '', isTap: false })}>
+        <TouchableOpacity 
+          style={styles.rowClear} 
+          onPress={() => this.setState({ tap: '' })}>
           <Text style={styles.ex}>
             X
           </Text>
         </TouchableOpacity>
-        </View>
+        </View> : null}
         {keyboard}
-        <View style={styles.row}>
-          <TextInput style={styles.input} editable={false} selectTextOnFocus={false} value={this.state.tap.toLowerCase()} placeholder="Insert word" placeholderTextColor="ABB2B9"/>
+        <View style={styles.rowFieldValid}>
+          <TextInput 
+            style={styles.input} 
+            editable={false} 
+            selectTextOnFocus={false} 
+            value={this.state.tap.toLowerCase()} 
+            placeholder="Insert word" 
+            placeholderTextColor="ABB2B9"/>
+        { this.state.tap.length > 2 
+        ? dictionary.words.includes(this.state.tap.toLowerCase()) 
+        ? <Text style={styles.true}>Valid</Text>
+        : <Text style={styles.false}>Invalid</Text>
+        : null}
         </View>
-        { this.state.tap.length > 2 ? dictionary.words.includes(this.state.tap.toLowerCase()) 
-        ? <View style={styles.rowValid}><Text style={styles.true}>Valid</Text></View> 
-        : <View style={styles.rowValid}><Text style={styles.false}>Invalid</Text></View> : null}
         </SafeAreaView>
       </View>
     );
@@ -123,25 +133,22 @@ const styles = StyleSheet.create({
     borderColor: '#D5DBDB'
   },
   input: {
-    margin: 10,
-    padding: 10,
     height: 40,
-    borderColor: '#D5DBDB',
-    borderRadius: 10,
-    borderWidth: 1,
-    width: '100%'
+    width: '100%',
+    fontSize: 16,
   },
   rowValid: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   true: {
     color: '#2ECC71',
-    fontSize: 18,
+    fontSize: 16,
   },
   false: {
     color: '#CB4335',
-    fontSize: 18,
+    fontSize: 16,
   },
   close: {
     color: '#ABB2B9',
@@ -167,5 +174,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
+  },
+  rowFieldValid: {
+    margin: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderColor: '#D5DBDB',
+    borderRadius: 10,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   }
 });
