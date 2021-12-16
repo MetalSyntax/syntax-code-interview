@@ -1,17 +1,34 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, StatusBar, SafeAreaView, TouchableOpacity } from 'react-native';
-const key = require('./data/test-board-2.json');
+import React from 'react';
+import { StyleSheet, Text, View, TextInput, StatusBar, SafeAreaView, TouchableOpacity } from 'react-native';
+const key = require('./data/test-board-1.json');
 const dictionary = require('./data/dictionary.json');
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tap: ''
+      tap: '',
+      newIndex: []
     };
   }
-
+  componentDidMount() {
+    let newIndex = key.board.map((value) => {
+      return {word: value, isTap: false};
+    })
+    this.setState({newIndex: newIndex})
+  }
   handleTap(value) {
-    this.setState({tap: this.state.tap + value})
+    if (this.state.tap.includes(value)) {
+      this.setState({tap: this.state.tap.replace(value,'')})
+    } else {
+      this.setState({tap: this.state.tap + value})
+    }
+  }
+  handleToggle(value, index) {
+    if (value) {
+      this.setState((prevState) => ({newIndex: prevState.newIndex.map((k,i) => i == index ? {...prevState.newIndex[index], isTap: false} : k)}))
+    } else {
+      this.setState((prevState) => ({newIndex: prevState.newIndex.map((k,i) => i == index ? {...prevState.newIndex[index], isTap: true} : k)}))
+    }
   }
   render() {
     const keyboard = []
@@ -19,31 +36,46 @@ export default class App extends React.Component {
       keyboard.push(<View style={styles.row}>
         {key.board.slice(i, i + 4).map((keys) => (
           <TouchableOpacity 
-            onPress={() => this.handleTap(keys)}
+            onPress={() => {
+              this.handleTap(keys)
+              this.handleToggle(this.state.newIndex[key.board.indexOf(keys)].isTap, key.board.indexOf(keys))
+            }}
             style={styles.touchable}>
+              {this.state.newIndex[key.board.indexOf(keys)] ?
+              <Text style={
+                styles.button,
+                this.state.newIndex[key.board.indexOf(keys)].isTap
+                ? dictionary.words.includes(this.state.tap.toLowerCase()) 
+                ? styles.trueButton 
+                : styles.falseButton 
+                : styles.button
+                }>
+                {keys}
+              </Text> : 
               <Text style={styles.button}>
                 {keys}
-              </Text>
+              </Text>}
           </TouchableOpacity>
         ))}
       </View>)}
-    return (
+      console.log(this.state)
+      return (
       <View style={styles.container}>
         <StatusBar/>
         <SafeAreaView>
-        {this.state.tap.length > 0 ?
         <View style={styles.rowClose}>
           <Text style={styles.close}>
             Clear
           </Text>
+          {this.state.tap.length > 0 ?
         <TouchableOpacity 
           style={styles.rowClear} 
-          onPress={() => this.setState({ tap: '' })}>
+          onPress={() => this.setState({ tap: '',  newIndex: this.state.newIndex.map((k, i) => i ? {...this.state.newIndex[i], isTap: false} : {...this.state.newIndex[i], isTap: false})})}>
           <Text style={styles.ex}>
             X
           </Text>
-        </TouchableOpacity>
-        </View> : null}
+        </TouchableOpacity>: null}
+        </View> 
         {keyboard}
         <View style={styles.rowFieldValid}>
           <TextInput 
@@ -70,15 +102,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
   rowClear: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    margin: 10,
+    margin: 10
   },
   touchable: {
     borderColor: 'transparent',
@@ -135,24 +167,26 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     width: '100%',
-    fontSize: 16,
+    fontSize: 16
   },
   rowValid: {
     flexDirection: 'column',
     justifyContent: 'flex-end',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   true: {
     color: '#2ECC71',
-    fontSize: 16,
+    fontSize: 16
   },
   false: {
     color: '#CB4335',
-    fontSize: 16,
+    fontSize: 16
   },
   close: {
     color: '#ABB2B9',
     fontSize: 18,
+    marginTop: 30,
+    marginBottom: 30
   },
   ex: {
     color: '#FFF',
@@ -173,7 +207,7 @@ const styles = StyleSheet.create({
   rowClose: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
   rowFieldValid: {
     margin: 10,
@@ -183,6 +217,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   }
 });
