@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, StatusBar, SafeAreaView, TouchableOpacity } from 'react-native';
 const key = require('./data/test-board-1.json');
-const dictionary = require('./data/dictionary.json');
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -43,12 +42,7 @@ export default class App extends React.Component {
             style={styles.touchable}>
               {this.state.newIndex[key.board.indexOf(keys)] ?
               <Text style={
-                styles.button,
-                this.state.newIndex[key.board.indexOf(keys)].isTap
-                ? dictionary.words.includes(this.state.tap.toLowerCase()) 
-                ? styles.trueButton 
-                : styles.falseButton 
-                : styles.button
+                styles.button, this.state.newIndex[key.board.indexOf(keys)].isTap ? styles.trueButton : styles.button
                 }>
                 {keys}
               </Text> : 
@@ -58,7 +52,6 @@ export default class App extends React.Component {
           </TouchableOpacity>
         ))}
       </View>)}
-      console.log(this.state)
       return (
       <View style={styles.container}>
         <StatusBar/>
@@ -70,7 +63,7 @@ export default class App extends React.Component {
           {this.state.tap.length > 0 ?
         <TouchableOpacity 
           style={styles.rowClear} 
-          onPress={() => this.setState({ tap: '',  newIndex: this.state.newIndex.map((k, i) => i ? {...this.state.newIndex[i], isTap: false} : {...this.state.newIndex[i], isTap: false})})}>
+          onPress={() => this.setState({ tap: '',  newIndex: this.state.newIndex.map((key, index) => index ? {...this.state.newIndex[i], isTap: false} : {...this.state.newIndex[i], isTap: false})})}>
           <Text style={styles.ex}>
             X
           </Text>
@@ -85,11 +78,6 @@ export default class App extends React.Component {
             value={this.state.tap.toLowerCase()} 
             placeholder="Insert word" 
             placeholderTextColor="ABB2B9"/>
-        { this.state.tap.length > 2 
-        ? dictionary.words.includes(this.state.tap.toLowerCase()) 
-        ? <Text style={styles.true}>Valid</Text>
-        : <Text style={styles.false}>Invalid</Text>
-        : null}
         </View>
         </SafeAreaView>
       </View>
@@ -148,22 +136,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D5DBDB'
   },
-  falseButton: {
-    color: '#FFF',
-    backgroundColor: '#CB4335',
-    padding: 7,
-    width: 50,
-    height: 50,
-    fontSize: 30,
-    flex: 1,
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-    borderRadius: 50,
-    borderWidth: 1,
-    borderColor: '#D5DBDB'
-  },
   input: {
     height: 40,
     width: '100%',
@@ -173,14 +145,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-end',
     alignItems: 'center'
-  },
-  true: {
-    color: '#2ECC71',
-    fontSize: 16
-  },
-  false: {
-    color: '#CB4335',
-    fontSize: 16
   },
   close: {
     color: '#ABB2B9',
